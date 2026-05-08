@@ -3,6 +3,7 @@ from django import forms
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 import markdown
+import random
 
 from . import util
 
@@ -106,3 +107,7 @@ def edit(request, title):
         "edit_form": EditForm(initial={'content': content}),
         "title": title
     })
+
+def random_page(request):
+    entry = random.choice(util.list_entries())
+    return HttpResponseRedirect(reverse('wiki', args=[entry]))
