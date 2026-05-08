@@ -35,3 +35,16 @@ def get_entry(title):
         return f.read().decode("utf-8")
     except FileNotFoundError:
         return None
+
+
+def clean_content(content):
+    # Normalize Windows/Mac line endings
+    content = content.replace('\r\n', '\n').replace('\r', '\n')
+
+    # Remove leading/trailing whitespace
+    content = content.strip()
+
+    # Collapse 3+ newlines into exactly 2 (one blank line)
+    content = re.sub(r'\n{3,}', '\n\n', content)
+
+    return content
