@@ -10,8 +10,21 @@ class SearchForm(forms.Form):
     query = forms.CharField(
         label='',
         widget=forms.TextInput(attrs={
+            'class': 'search',
             'placeholder': 'Search Wiki'
         }))
+    
+class CreateForm(forms.Form):
+    title = forms.CharField(
+        label='',
+        widget=forms.TextInput(attrs={
+            'class': 'create-form title', 
+            'placeholder': 'Title'}))
+    content = forms.CharField(
+        label='',
+        widget=forms.Textarea(attrs={
+            'class': 'create-form content', 
+            'placeholder': 'Content'}))
 
 def index(request):
     return render(request, "encyclopedia/index.html", {
@@ -36,16 +49,24 @@ def wiki(request, title):
 
 def search(request):
     entries = util.list_entries()
+    possible_entries = []
     if request.method == "POST":
         form = SearchForm(request.POST)
         if form.is_valid():
             query = form.cleaned_data["query"]
             for entry in entries:
                 if query.lower() == entry.lower():
-                    # return redirect('wiki', entry)
                     return HttpResponseRedirect(reverse('wiki', args=[entry]))
-
+                if query.lower() in entry.lower():
+                    possible_entries.append(entry)
 
     return render(request, "encyclopedia/search.html", {
-        "search_form": SearchForm()
+        "search_form": SearchForm(),
+        "possible_entries": possible_entries
+    })
+
+def create(request):
+    return render(request, "encyclopedia/create.html", {
+        "search_form": SearchForm(),
+        "create_form": CreateForm()
     })
